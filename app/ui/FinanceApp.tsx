@@ -7,6 +7,7 @@ import type { EmployeeKey, Expense, FinanceSnapshot, Sale } from "@/lib/types";
 
 type DashboardData = { configured: boolean; sales: Sale[]; expenses: Expense[]; snapshot: FinanceSnapshot; error?: string };
 const emptySnapshot: FinanceSnapshot = { projects: { A: { incomeCents: 0, commissionCents: 0, expensesCents: 0, resultCents: 0 }, B: { incomeCents: 0, commissionCents: 0, expensesCents: 0, resultCents: 0 } }, company: { incomeCents: 0, commissionCents: 0, recordedExpensesCents: 0, overheadCents: 0, awaitingAllocationCents: 0, resultCents: 0 }, commissions: { richard: 0, anastasia: 0, "jean-claude": 0 } };
+const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL ?? "https://github.com/martins-zviedris/friends-included-finance";
 
 export default function FinanceApp() {
   const [role, setRole] = useState<EmployeeKey>("svetlana");
@@ -58,7 +59,7 @@ export default function FinanceApp() {
         <li><b>Check delivery.</b><span>The records table shows Google Sheets synchronization and Telegram notification status. Failed deliveries provide a retry.</span></li>
       </ol>
     </section>
-    <footer><strong>Friends Included Finance</strong><span><a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · {process.env.NEXT_PUBLIC_GITHUB_URL ? <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a> : "GitHub link pending"} · Vercel deployment pending</span></footer>
+    <footer><strong>Friends Included Finance</strong><span><a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a> · Vercel</span></footer>
   </main>;
 }
 
