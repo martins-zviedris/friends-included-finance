@@ -1,0 +1,29 @@
+{
+  "name": "friends-included-finance",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "telegram:poll": "node scripts/telegram-poll.mjs",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:assignment": "node scripts/run-assignment-tests.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "googleapis": "^160.0.0",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
