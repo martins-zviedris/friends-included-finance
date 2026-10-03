@@ -25,7 +25,10 @@ export async function syncTransaction(type: "sale" | "expense", reference: strin
   if (row.origin_chat_id && row.notification_status !== "SENT") {
     try {
       let text: string;
-      if (initial || row.status === "PENDING" || row.status === "AWAITING_ALLOCATION") text = `${reference} recorded. ${euros(Number(row.amount_cents))}. Status: ${row.status}.`;
+      if (initial || row.status === "PENDING" || row.status === "AWAITING_ALLOCATION") {
+        const destination = type === "sale" ? `Project: ${row.project}` : `Proposed allocation: ${row.proposed_allocation}`;
+        text = `${reference} recorded. Amount: ${euros(Number(row.amount_cents))}. ${destination}. Status: ${row.status}.`;
+      }
       else if (type === "sale") {
         const changed = row.proposed_richard !== row.approved_richard || row.proposed_anastasia !== row.approved_anastasia || row.proposed_jean_claude !== row.approved_jean_claude;
         text = `${reference} approved${changed ? " — commission split changed" : ""}. Sale ${euros(Number(row.amount_cents))}; total commission ${euros(Number(row.commission_pool_cents))}. Richard: ${row.proposed_richard}% → ${row.approved_richard}% (${euros(Number(row.richard_commission_cents))}). Anastasia: ${row.proposed_anastasia}% → ${row.approved_anastasia}% (${euros(Number(row.anastasia_commission_cents))}). Jean-Claude: ${row.proposed_jean_claude}% → ${row.approved_jean_claude}% (${euros(Number(row.jean_claude_commission_cents))}).`;
