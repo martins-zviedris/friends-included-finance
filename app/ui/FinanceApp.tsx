@@ -35,7 +35,7 @@ export default function FinanceApp() {
     </header>
     {!data.configured && <div className="setup"><strong>Local build ready</strong><span>Connect Supabase with environment variables to enable persistent transactions.</span></div>}
     {notice && <div className="notice">{notice}</div>}
-    <nav className="jump">{role === "svetlana" && <a href="#overview">Overview</a>}<a href="#entry">New entry</a>{role === "svetlana" && <a href="#decisions">Decisions</a>}<a href="#records">Records</a><a href="#instructions">Instructions</a></nav>
+    <nav className="jump">{role === "svetlana" && <a href="#overview">Overview</a>}<a href="#entry">New entry</a>{role === "svetlana" && <a href="#decisions">Decisions</a>}<a href="#records">Records</a><a href="#instructions">Instructions</a><a href="/review">Professor test</a></nav>
     {role === "svetlana" && <section id="overview" className="section"><SectionTitle kicker="Live position" title="Finance overview" detail="Only approved sales count as income. Every recorded expense affects the company immediately."/>
       <div className="metric-grid"><Metric label="Company result" value={euros(data.snapshot.company.resultCents)} accent/><Metric label="Approved income" value={euros(data.snapshot.company.incomeCents)}/><Metric label="Commission expense" value={euros(data.snapshot.company.commissionCents)}/><Metric label="Company overhead" value={euros(data.snapshot.company.overheadCents)}/><Metric label="Awaiting allocation" value={euros(data.snapshot.company.awaitingAllocationCents)}/></div>
       <div className="project-grid">{(["A", "B"] as const).map((key) => <article className="project-card" key={key}><div><span>Project {key}</span><h3>{key === "A" ? "Respectable Relatives" : "Drunk University Friends"}</h3></div><strong>{euros(data.snapshot.projects[key].resultCents)}</strong><dl><div><dt>Income</dt><dd>{euros(data.snapshot.projects[key].incomeCents)}</dd></div><div><dt>Commission</dt><dd>{euros(data.snapshot.projects[key].commissionCents)}</dd></div><div><dt>Expenses</dt><dd>{euros(data.snapshot.projects[key].expensesCents)}</dd></div></dl></article>)}</div>
@@ -59,7 +59,7 @@ export default function FinanceApp() {
         <li><b>Check delivery.</b><span>The records table shows Google Sheets synchronization and Telegram notification status. Failed deliveries provide a retry.</span></li>
       </ol>
     </section>
-    <footer><strong>Friends Included Finance</strong><span><a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a> · Vercel</span></footer>
+    <footer><strong>Friends Included Finance</strong><span><a href="/review">Professor live test</a> · <a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a> · Vercel</span></footer>
   </main>;
 }
 
