@@ -11,10 +11,11 @@ const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL ?? "https://github.com/mart
 
 export default function FinanceApp() {
   const [role, setRole] = useState<EmployeeKey>("svetlana");
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData>({ configured: false, sales: [], expenses: [], snapshot: emptySnapshot });
   const [notice, setNotice] = useState("");
   const current = useMemo(() => employees.find((item) => item.key === role)!, [role]);
-  const load = useCallback(async () => { try { const response = await fetch(`/api/dashboard?actor=${encodeURIComponent(role)}`, { cache: "no-store" }); setData(await response.json()); } catch { setNotice("Could not load the dashboard."); } }, [role]);
+  const load = useCallback(async () => { setLoading(true); try { const response = await fetch(`/api/dashboard?actor=${encodeURIComponent(role)}`, { cache: "no-store" }); setData(await response.json()); } catch { setNotice("Could not load the dashboard."); } finally { setLoading(false); } }, [role]);
   useEffect(() => { void load(); }, [load]);
   const visibleSales = data.sales;
   const visibleExpenses = data.expenses;
@@ -33,24 +34,25 @@ export default function FinanceApp() {
       <div><p className="eyebrow">Friends Included Ltd</p><h1>Wedding operations<br/><span>without the guesswork.</span></h1><p className="lede">One controlled record from staff submission to manager decision, financial result, and notification.</p></div>
       <div className="identity"><span>Prepared by</span><strong>Mārtiņš Evarts Zviedris</strong><label>Demonstration role<select value={role} onChange={(event) => setRole(event.target.value as EmployeeKey)}>{employees.map((employee) => <option key={employee.key} value={employee.key}>{employee.name}</option>)}</select></label><small>{current.role.replaceAll("_", " ")}</small></div>
     </header>
-    {!data.configured && <div className="setup"><strong>Local build ready</strong><span>Connect Supabase with environment variables to enable persistent transactions.</span></div>}
+    {loading && <div className="setup loading"><strong>Loading live workspace…</strong><span>Checking the persistent Supabase connection.</span></div>}
+    {!loading && !data.configured && <div className="setup"><strong>Connection unavailable</strong><span>The persistent finance service could not be reached.</span></div>}
     {notice && <div className="notice">{notice}</div>}
     <nav className="jump">{role === "svetlana" && <a href="#overview">Overview</a>}<a href="#entry">New entry</a>{role === "svetlana" && <a href="#decisions">Decisions</a>}<a href="#records">Records</a><a href="#instructions">Instructions</a><a href="/review">Professor test</a></nav>
-    {role === "svetlana" && <section id="overview" className="section"><SectionTitle kicker="Live position" title="Finance overview" detail="Only approved sales count as income. Every recorded expense affects the company immediately."/>
+    {!loading && role === "svetlana" && <section id="overview" className="section"><SectionTitle kicker="Live position" title="Finance overview" detail="Only approved sales count as income. Every recorded expense affects the company immediately."/>
       <div className="metric-grid"><Metric label="Company result" value={euros(data.snapshot.company.resultCents)} accent/><Metric label="Approved income" value={euros(data.snapshot.company.incomeCents)}/><Metric label="Commission expense" value={euros(data.snapshot.company.commissionCents)}/><Metric label="Company overhead" value={euros(data.snapshot.company.overheadCents)}/><Metric label="Awaiting allocation" value={euros(data.snapshot.company.awaitingAllocationCents)}/></div>
       <div className="project-grid">{(["A", "B"] as const).map((key) => <article className="project-card" key={key}><div><span>Project {key}</span><h3>{key === "A" ? "Respectable Relatives" : "Drunk University Friends"}</h3></div><strong>{euros(data.snapshot.projects[key].resultCents)}</strong><dl><div><dt>Income</dt><dd>{euros(data.snapshot.projects[key].incomeCents)}</dd></div><div><dt>Commission</dt><dd>{euros(data.snapshot.projects[key].commissionCents)}</dd></div><div><dt>Expenses</dt><dd>{euros(data.snapshot.projects[key].expensesCents)}</dd></div></dl></article>)}</div>
       <div className="commission-strip"><span>Commission earned</span><b>Richard {euros(data.snapshot.commissions.richard)}</b><b>Anastasia {euros(data.snapshot.commissions.anastasia)}</b><b>Jean-Claude {euros(data.snapshot.commissions["jean-claude"])}</b></div>
     </section>}
-    <section id="entry" className="section"><SectionTitle kicker="Staff desk" title="Record a transaction" detail="The selected role determines which action the server will accept."/>
+    {!loading && <section id="entry" className="section"><SectionTitle kicker="Staff desk" title="Record a transaction" detail="The selected role determines which action the server will accept."/>
       {(["richard", "anastasia", "jean-claude"] as EmployeeKey[]).includes(role) && <SaleForm role={role} disabled={!data.configured} onSubmit={submit}/>}
       {role === "kevin" && <ExpenseForm disabled={!data.configured} onSubmit={submit}/>}
       {role === "svetlana" && <ManagerSetup disabled={!data.configured} onSubmit={submit}/>}
-    </section>
-    {role === "svetlana" && <section id="decisions" className="section"><SectionTitle kicker="Manager queue" title="Decisions requiring attention" detail="Original proposals remain visible beside the final decision."/>
+    </section>}
+    {!loading && role === "svetlana" && <section id="decisions" className="section"><SectionTitle kicker="Manager queue" title="Decisions requiring attention" detail="Original proposals remain visible beside the final decision."/>
       <div className="queue"><h3>Pending sales</h3>{data.sales.filter((sale) => sale.status === "PENDING").map((sale) => <SaleDecision sale={sale} key={sale.reference} disabled={!data.configured} submit={submit}/>)}{!data.sales.some((sale) => sale.status === "PENDING") && <Empty text="No sales are awaiting approval."/>}</div>
       <div className="queue"><h3>Expenses awaiting allocation</h3>{data.expenses.filter((expense) => expense.status === "AWAITING_ALLOCATION").map((expense) => <ExpenseDecision expense={expense} key={expense.reference} disabled={!data.configured} submit={submit}/>)}{!data.expenses.some((expense) => expense.status === "AWAITING_ALLOCATION") && <Empty text="No expenses are awaiting allocation."/>}</div>
     </section>}
-    <section id="records" className="section"><SectionTitle kicker="Audit trail" title="Transaction records" detail={role === "svetlana" ? "Manager view includes every record." : "Your view includes only your own submissions and statuses."}/><RecordTable sales={visibleSales} expenses={visibleExpenses} retry={submit}/></section>
+    {!loading && <section id="records" className="section"><SectionTitle kicker="Audit trail" title="Transaction records" detail={role === "svetlana" ? "Manager view includes every record." : "Your view includes only your own submissions and statuses."}/><RecordTable sales={visibleSales} expenses={visibleExpenses} retry={submit}/></section>}
     <section id="instructions" className="section"><SectionTitle kicker="Quick guide" title="How to use this system" detail="Website and Telegram submissions follow the same validation and financial rules."/>
       <ol className="instructions">
         <li><b>Select a demonstration role.</b><span>Richard, Anastasia, and Jean-Claude enter sales. Kevin enters expenses. Svetlana manages Telegram links and decisions.</span></li>
