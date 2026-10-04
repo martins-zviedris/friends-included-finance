@@ -4,6 +4,7 @@ import { FormEvent, Fragment, useCallback, useEffect, useMemo, useState } from "
 import { employees } from "@/lib/employees";
 import { euros } from "@/lib/finance";
 import type { EmployeeKey, Expense, FinanceSnapshot, Sale } from "@/lib/types";
+import ReviewerTest from "@/app/review/ReviewerTest";
 
 type DashboardData = { configured: boolean; sales: Sale[]; expenses: Expense[]; snapshot: FinanceSnapshot; error?: string };
 const emptySnapshot: FinanceSnapshot = { projects: { A: { incomeCents: 0, commissionCents: 0, expensesCents: 0, resultCents: 0 }, B: { incomeCents: 0, commissionCents: 0, expensesCents: 0, resultCents: 0 } }, company: { incomeCents: 0, commissionCents: 0, recordedExpensesCents: 0, overheadCents: 0, awaitingAllocationCents: 0, resultCents: 0 }, commissions: { richard: 0, anastasia: 0, "jean-claude": 0 } };
@@ -37,7 +38,7 @@ export default function FinanceApp() {
     {loading && <div className="setup loading"><strong>Loading live workspace…</strong><span>Checking the persistent Supabase connection.</span></div>}
     {!loading && !data.configured && <div className="setup"><strong>Connection unavailable</strong><span>The persistent finance service could not be reached.</span></div>}
     {notice && <div className="notice">{notice}</div>}
-    <nav className="jump">{role === "svetlana" && <a href="#overview">Overview</a>}<a href="#entry">New entry</a>{role === "svetlana" && <a href="#decisions">Decisions</a>}<a href="#records">Records</a><a href="#instructions">Instructions</a><a href="/review">Professor test</a></nav>
+    <nav className="jump">{role === "svetlana" && <a href="#overview">Overview</a>}<a href="#entry">New entry</a>{role === "svetlana" && <a href="#decisions">Decisions</a>}<a href="#records">Records</a><a href="#instructions">Instructions</a><a href="#review-test">Professor test</a></nav>
     {!loading && role === "svetlana" && <section id="overview" className="section"><SectionTitle kicker="Live position" title="Finance overview" detail="Only approved sales count as income. Every recorded expense affects the company immediately."/>
       <div className="metric-grid"><Metric label="Company result" value={euros(data.snapshot.company.resultCents)} accent/><Metric label="Approved income" value={euros(data.snapshot.company.incomeCents)}/><Metric label="Commission expense" value={euros(data.snapshot.company.commissionCents)}/><Metric label="Company overhead" value={euros(data.snapshot.company.overheadCents)}/><Metric label="Awaiting allocation" value={euros(data.snapshot.company.awaitingAllocationCents)}/></div>
       <div className="project-grid">{(["A", "B"] as const).map((key) => <article className="project-card" key={key}><div><span>Project {key}</span><h3>{key === "A" ? "Respectable Relatives" : "Drunk University Friends"}</h3></div><strong>{euros(data.snapshot.projects[key].resultCents)}</strong><dl><div><dt>Income</dt><dd>{euros(data.snapshot.projects[key].incomeCents)}</dd></div><div><dt>Commission</dt><dd>{euros(data.snapshot.projects[key].commissionCents)}</dd></div><div><dt>Expenses</dt><dd>{euros(data.snapshot.projects[key].expensesCents)}</dd></div></dl></article>)}</div>
@@ -61,7 +62,8 @@ export default function FinanceApp() {
         <li><b>Check delivery.</b><span>The records table shows Google Sheets synchronization and Telegram notification status. Failed deliveries provide a retry.</span></li>
       </ol>
     </section>
-    <footer><strong>Friends Included Finance</strong><span><a href="/review">Professor live test</a> · <a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a> · Vercel</span></footer>
+    <ReviewerTest embedded/>
+    <footer><strong>Friends Included Finance</strong><span><a href="#review-test">Professor live test</a> · <a href="https://t.me/FriendsIncludedDay4Bot" target="_blank" rel="noreferrer">Telegram bot</a> · Supabase · {process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL ? <a href={process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL} target="_blank" rel="noreferrer">Google Sheets</a> : "Google Sheets"} · <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a> · Vercel</span></footer>
   </main>;
 }
 

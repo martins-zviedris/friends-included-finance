@@ -18,7 +18,7 @@ async function request(path: string, body: unknown) {
   return result;
 }
 
-export default function ReviewerTest() {
+export default function ReviewerTest({ embedded = false }: { embedded?: boolean }) {
   const [reference, setReference] = useState("");
   const [linkState, setLinkState] = useState<StepState>("READY");
   const [submitState, setSubmitState] = useState<StepState>("READY");
@@ -66,7 +66,8 @@ export default function ReviewerTest() {
   }
 
   const configured = record !== null || submitState !== "READY";
-  return <section className="review-flow">
+  return <section id="review-test" className={`review-flow ${embedded ? "review-embedded" : ""}`}>
+    {embedded && <div className="section-title"><div><p>One-link verification</p><h2>Professor live test</h2></div><span>Run the connected Telegram, Supabase, Google Sheets and manager-decision workflow without leaving this website.</span></div>}
     <div className="review-note"><strong>What this proves</strong><span>Telegram identity link → persistent Supabase submission → manager correction → Google Sheets update → Telegram return.</span></div>
 
     <article className="review-step">
